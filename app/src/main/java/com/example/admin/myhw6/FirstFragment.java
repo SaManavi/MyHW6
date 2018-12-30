@@ -4,6 +4,8 @@ package com.example.admin.myhw6;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -50,6 +52,19 @@ public class FirstFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
 
+        FloatingActionButton fab = v.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+
+                Intent myInt=AddingTaskActivity.newIntent(getActivity());
+                startActivity(myInt);
+
+            }
+        });
+
         AttachingAdapter();
         return v;
 
@@ -88,7 +103,7 @@ public class FirstFragment extends Fragment {
 
                    Intent myInt= TaskDetailActivity.newIntent(getActivity(), mCurrentTask.getTaskUUID());
                     startActivity(myInt);
-                    Toast.makeText(getActivity(), "start activity", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getActivity(), "start activity", Toast.LENGTH_SHORT).show();
 
                 }
             });

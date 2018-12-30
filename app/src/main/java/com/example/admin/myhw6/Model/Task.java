@@ -15,7 +15,14 @@ public class Task {
 
     public Task() {
         mTaskUUID = UUID.randomUUID();
-        mTitle = "#";
+        mIsdone=false;
+    }
+
+    public Task( String title, String description) {
+        this();
+        mTitle = title;
+        mDescription = description;
+//        mDate = date;
     }
 
     public UUID getTaskUUID() {
