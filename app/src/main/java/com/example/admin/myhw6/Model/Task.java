@@ -18,10 +18,11 @@ public class Task {
         mIsdone=false;
     }
 
-    public Task( String title, String description) {
+    public Task( String title, String description,boolean isdone) {
         this();
         mTitle = title;
         mDescription = description;
+        mIsdone=isdone;
 //        mDate = date;
     }
 

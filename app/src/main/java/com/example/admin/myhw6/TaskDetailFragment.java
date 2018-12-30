@@ -1,8 +1,6 @@
 package com.example.admin.myhw6;
 
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.example.admin.myhw6.Model.Task;
@@ -33,7 +33,8 @@ public class TaskDetailFragment extends Fragment {
     private Button mEdit;
     private Button mDel;
     private Button mDone;
-    
+    private CheckBox mIsDoneCheckBox;
+
 
 
 
@@ -74,6 +75,8 @@ public class TaskDetailFragment extends Fragment {
         mTaskDes=v.findViewById(R.id.task_detail_des);
         mDone=v.findViewById(R.id.task_detail_done_butt);
         if(mCurrentTask.isIsdone()==true)mDone.setEnabled(false);
+        mIsDoneCheckBox =v.findViewById(R.id.task_detail_isDone);
+        mIsDoneCheckBox.setChecked(mCurrentTask.isIsdone());
 
         mDel=v.findViewById(R.id.task_detail_del_butt);
         mEdit=v.findViewById(R.id.task_detail_edit_butt);
@@ -82,12 +85,13 @@ public class TaskDetailFragment extends Fragment {
 
         mTaskTitle.setEnabled(false);
         mTaskDes.setEnabled(false);
+        mIsDoneCheckBox.setVisibility(View.INVISIBLE);
 
         mDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mCurrentTask.setIsdone(true);
-        mDone.setEnabled(false);
+                mDone.setEnabled(false);
             }
         });
 
@@ -96,9 +100,11 @@ public class TaskDetailFragment extends Fragment {
             public void onClick(View v) {
                 mTaskTitle.setEnabled(true);
                 mTaskDes.setEnabled(true);
+                mIsDoneCheckBox.setVisibility(View.VISIBLE);
 
             }
         });
+
 
         mTaskTitle.addTextChangedListener(new TextWatcher() {
             @Override
@@ -108,7 +114,7 @@ public class TaskDetailFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-mCurrentTask.setTitle(s.toString());
+                mCurrentTask.setTitle(s.toString());
             }
 
             @Override
@@ -116,6 +122,7 @@ mCurrentTask.setTitle(s.toString());
 
             }
         });
+
 
         mTaskDes.addTextChangedListener(new TextWatcher() {
             @Override
@@ -135,6 +142,12 @@ mCurrentTask.setTitle(s.toString());
         });
 
 
+        mIsDoneCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mCurrentTask.setIsdone(isChecked);
+            }
+        });
 
 
 

@@ -51,6 +51,12 @@
             android:hint="Time Of Task"
             android:inputType="time"
             tools:text="@tools:sample/date/hhmm" />
+
+        <Switch
+            android:id="@+id/add_task_isDone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Task is done" />
     </LinearLayout>
 
     <LinearLayout
