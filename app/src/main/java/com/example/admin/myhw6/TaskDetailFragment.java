@@ -17,6 +17,8 @@ import android.widget.TextView;
 import com.example.admin.myhw6.Model.Task;
 import com.example.admin.myhw6.Model.TaskList;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 
@@ -34,6 +36,8 @@ public class TaskDetailFragment extends Fragment {
     private Button mDel;
     private Button mDone;
     private CheckBox mIsDoneCheckBox;
+    private Button mTaskDate;
+    private Button mTaskTime;
 
 
 
@@ -74,14 +78,27 @@ public class TaskDetailFragment extends Fragment {
         mTaskTitle=v.findViewById(R.id.task_detail_title);
         mTaskDes=v.findViewById(R.id.task_detail_des);
         mDone=v.findViewById(R.id.task_detail_done_butt);
-        if(mCurrentTask.isIsdone()==true)mDone.setEnabled(false);
         mIsDoneCheckBox =v.findViewById(R.id.task_detail_isDone);
-        mIsDoneCheckBox.setChecked(mCurrentTask.isIsdone());
-
+        mTaskDate=v.findViewById(R.id.date_of_task_button);
+        mTaskTime=v.findViewById(R.id.time_of_task_button);
         mDel=v.findViewById(R.id.task_detail_del_butt);
         mEdit=v.findViewById(R.id.task_detail_edit_butt);
+
+
+
+        if(mCurrentTask.isIsdone()==true)mDone.setEnabled(false);
+        mIsDoneCheckBox.setChecked(mCurrentTask.isIsdone());
         mTaskTitle.setText(mCurrentTask.getTitle());
         mTaskDes.setText(mCurrentTask.getDescription());
+
+        SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy/MM/dd ");
+        SimpleDateFormat mTimeFormat = new SimpleDateFormat(" hh:mm a ");
+        Date GetDate = mCurrentTask.getDate();
+        String DateStr = mDateFormat.format(GetDate);
+        String TimeStr=mTimeFormat.format(GetDate);
+mTaskDate.setText("Date Of Task:   "+DateStr);
+mTaskTime.setText("Time Of Task:   "+TimeStr);
+
 
         mTaskTitle.setEnabled(false);
         mTaskDes.setEnabled(false);
@@ -146,6 +163,7 @@ public class TaskDetailFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 mCurrentTask.setIsdone(isChecked);
+                mDone.setEnabled(!isChecked);
             }
         });
 

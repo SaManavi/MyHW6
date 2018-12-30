@@ -16,6 +16,8 @@ public class Task {
     public Task() {
         mTaskUUID = UUID.randomUUID();
         mIsdone=false;
+        mDate= new Date();
+
     }
 
     public Task( String title, String description,boolean isdone) {
