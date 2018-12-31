@@ -1,6 +1,8 @@
 package com.example.admin.myhw6;
 
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -29,6 +31,10 @@ public class TaskDetailFragment extends Fragment {
 
 
     public static final String TASK_ID = "com.example.admin.myhw6.Task uuid as Id";
+    private static final String DIALOG_TAG = "DialogDate";
+    private static final int REQ_DATE_PICKER = 0;
+    private static final int REQ_TIME_PICKER =1 ;
+
     private Task mCurrentTask;
     private TextView mTaskTitle;
     private TextView mTaskDes;
@@ -103,6 +109,8 @@ mTaskTime.setText("Time Of Task:   "+TimeStr);
         mTaskTitle.setEnabled(false);
         mTaskDes.setEnabled(false);
         mIsDoneCheckBox.setVisibility(View.INVISIBLE);
+        mTaskDate.setEnabled(false);
+        mTaskTime.setEnabled(false);
 
         mDone.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,6 +126,8 @@ mTaskTime.setText("Time Of Task:   "+TimeStr);
                 mTaskTitle.setEnabled(true);
                 mTaskDes.setEnabled(true);
                 mIsDoneCheckBox.setVisibility(View.VISIBLE);
+                mTaskDate.setEnabled(true);
+                mTaskTime.setEnabled(true);
 
             }
         });
@@ -167,7 +177,27 @@ mTaskTime.setText("Time Of Task:   "+TimeStr);
             }
         });
 
+mTaskDate.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
+        DatePickerFragment datePickerFragment = DatePickerFragment.newInstance(mCurrentTask.getDate());
+        datePickerFragment.setTargetFragment(TaskDetailFragment.this,
+                REQ_DATE_PICKER);
+        datePickerFragment.show(getFragmentManager(), DIALOG_TAG);
+    }
+});
 
+
+mTaskTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TimePickerFragment timePickFrag = TimePickerFragment.newInstance(mCurrentTask.getDate());
+                timePickFrag.setTargetFragment(TaskDetailFragment.this,
+                        REQ_TIME_PICKER);
+                timePickFrag.show(getFragmentManager(), DIALOG_TAG);
+
+            }
+        });
 
 
 
@@ -176,5 +206,37 @@ mTaskTime.setText("Time Of Task:   "+TimeStr);
         return v;
     }
 
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode != Activity.RESULT_OK)
+            return;
+
+        if (requestCode == REQ_DATE_PICKER) {
+            Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
+            mCurrentTask.setDate(date);
+
+            SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy/MM/dd ");
+//            SimpleDateFormat mTimeFormat = new SimpleDateFormat(" hh:mm a ");
+            Date GetDate = mCurrentTask.getDate();
+            String DateStr = mDateFormat.format(GetDate);
+//            String TimeStr=mTimeFormat.format(GetDate);
+            mTaskDate.setText(DateStr);
+//            mTaskTime.setText(TimeStr);
+        }
+        if (requestCode == REQ_TIME_PICKER) {
+            Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
+            mCurrentTask.setDate(date);
+
+//            SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy/MM/dd ");
+            SimpleDateFormat mTimeFormat = new SimpleDateFormat(" hh:mm a ");
+            Date GetDate = mCurrentTask.getDate();
+//            String DateStr = mDateFormat.format(GetDate);
+            String TimeStr=mTimeFormat.format(GetDate);
+//            mTaskDate.setText(DateStr);
+            mTaskTime.setText(TimeStr);
+        }
+    }
 
 }
