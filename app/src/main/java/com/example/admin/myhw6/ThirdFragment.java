@@ -1,17 +1,18 @@
 package com.example.admin.myhw6;
 
 
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+
+import com.example.admin.myhw6.Model.Task;
+import com.example.admin.myhw6.Model.TaskList;
+
+import java.util.List;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ThirdFragment extends Fragment {
+public class ThirdFragment extends AbstractFragment {
 
 
     public ThirdFragment() {
@@ -19,15 +20,16 @@ public class ThirdFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public int AttachingAdapter() {
+        TaskList instance = TaskList.getInstance(getActivity());
+        List<Task> tl = instance.getUnDoneTasksList();
+        MyAdapter mAdapt = new MyAdapter(tl);
+        mRecyclerView.setAdapter(mAdapt);
+        mAdapt.notifyItemChanged(mCurrentPosition);
+        return tl.size();
+
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-// Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_third, container, false);
-    }
+
 
 }

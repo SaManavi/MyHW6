@@ -99,13 +99,11 @@ public abstract class AbstractFragment extends Fragment {
             mCurrentPosition=getAdapterPosition();
 
 
-            mTaskIconOfHolder.setOnClickListener(new View.OnClickListener() {
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
                    Intent myInt= TaskDetailActivity.newIntent(getActivity(), mCurrentTask.getTaskUUID());
                     startActivity(myInt);
-
                 }
             });
 

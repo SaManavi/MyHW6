@@ -14,18 +14,25 @@ public class Task {
 
 
     public Task() {
-        mTaskUUID = UUID.randomUUID();
-        mIsdone=false;
-        mDate= new Date();
+     this(UUID.randomUUID());
+
 
     }
 
-    public Task( String title, String description,boolean isdone) {
+    public Task(UUID id){
+     mTaskUUID=id;
+        mIsdone=false;
+        mDate= new Date();
+
+
+    }
+
+    public Task( String title, String description,boolean isdone, Date date) {
         this();
         mTitle = title;
         mDescription = description;
         mIsdone=isdone;
-//        mDate = date;
+        mDate = date;
     }
 
     public UUID getTaskUUID() {

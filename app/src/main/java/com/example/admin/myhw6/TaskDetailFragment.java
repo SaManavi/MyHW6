@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.admin.myhw6.Model.Task;
 import com.example.admin.myhw6.Model.TaskList;
@@ -44,6 +45,7 @@ public class TaskDetailFragment extends Fragment {
     private CheckBox mIsDoneCheckBox;
     private Button mTaskDate;
     private Button mTaskTime;
+    private Button mConfirm;
 
 
 
@@ -70,7 +72,7 @@ public class TaskDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         UUID mcurrentTaskId= (UUID) getArguments().getSerializable(TASK_ID);
-        mCurrentTask=TaskList.getInstance().getTaskById(mcurrentTaskId);
+        mCurrentTask=TaskList.getInstance(getActivity()).getTaskById(mcurrentTaskId);
 
     }
 
@@ -89,9 +91,10 @@ public class TaskDetailFragment extends Fragment {
         mTaskTime=v.findViewById(R.id.time_of_task_button);
         mDel=v.findViewById(R.id.task_detail_del_butt);
         mEdit=v.findViewById(R.id.task_detail_edit_butt);
+        mConfirm=v.findViewById(R.id.task_detail_confirm);
 
 
-
+        mConfirm.setVisibility(View.INVISIBLE);
         if(mCurrentTask.isIsdone()==true)mDone.setEnabled(false);
         mIsDoneCheckBox.setChecked(mCurrentTask.isIsdone());
         mTaskTitle.setText(mCurrentTask.getTitle());
@@ -102,8 +105,8 @@ public class TaskDetailFragment extends Fragment {
         Date GetDate = mCurrentTask.getDate();
         String DateStr = mDateFormat.format(GetDate);
         String TimeStr=mTimeFormat.format(GetDate);
-mTaskDate.setText("Date Of Task:   "+DateStr);
-mTaskTime.setText("Time Of Task:   "+TimeStr);
+        mTaskDate.setText("Date Of Task:   "+DateStr);
+        mTaskTime.setText("Time Of Task:   "+TimeStr);
 
 
         mTaskTitle.setEnabled(false);
@@ -128,6 +131,29 @@ mTaskTime.setText("Time Of Task:   "+TimeStr);
                 mIsDoneCheckBox.setVisibility(View.VISIBLE);
                 mTaskDate.setEnabled(true);
                 mTaskTime.setEnabled(true);
+                mConfirm.setVisibility(View.VISIBLE);
+
+            }
+        });
+
+        mDel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               TaskList.getInstance(getActivity()).removeTask(mCurrentTask.getTaskUUID());
+                Toast.makeText(getActivity(), "Your Task has been deleted.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        mConfirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mTaskTitle.setEnabled(false);
+                mTaskDes.setEnabled(false);
+                mIsDoneCheckBox.setVisibility(View.INVISIBLE);
+                mTaskDate.setEnabled(false);
+                mTaskTime.setEnabled(false);
+                mConfirm.setEnabled(false);
+                Toast.makeText(getActivity(), "Your task has been edited.", Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -177,18 +203,18 @@ mTaskTime.setText("Time Of Task:   "+TimeStr);
             }
         });
 
-mTaskDate.setOnClickListener(new View.OnClickListener() {
-    @Override
-    public void onClick(View v) {
-        DatePickerFragment datePickerFragment = DatePickerFragment.newInstance(mCurrentTask.getDate());
-        datePickerFragment.setTargetFragment(TaskDetailFragment.this,
-                REQ_DATE_PICKER);
-        datePickerFragment.show(getFragmentManager(), DIALOG_TAG);
-    }
-});
+        mTaskDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerFragment datePickerFragment = DatePickerFragment.newInstance(mCurrentTask.getDate());
+                datePickerFragment.setTargetFragment(TaskDetailFragment.this,
+                        REQ_DATE_PICKER);
+                datePickerFragment.show(getFragmentManager(), DIALOG_TAG);
+            }
+        });
 
 
-mTaskTime.setOnClickListener(new View.OnClickListener() {
+        mTaskTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 TimePickerFragment timePickFrag = TimePickerFragment.newInstance(mCurrentTask.getDate());
@@ -239,4 +265,12 @@ mTaskTime.setOnClickListener(new View.OnClickListener() {
         }
     }
 
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        TaskList.getInstance(getActivity()).update(mCurrentTask);
+
+    }
 }

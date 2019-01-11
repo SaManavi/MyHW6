@@ -20,10 +20,13 @@ public class MainActivity extends AppCompatActivity {
 
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+
         adapter = new TabAdapter(getSupportFragmentManager());
+
         adapter.addFragment(new FirstFragment(), "All Tasks");
         adapter.addFragment(new SecondFragment(), "Done");
         adapter.addFragment(new ThirdFragment(), "Undone");
+
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
 
