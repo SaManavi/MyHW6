@@ -13,18 +13,29 @@ public class ToDoListBaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(" create table "+ToDoListSchema.TaskTable.NAME+" ( "+
-        " _id Integer primary key autoincrement ,  "+
-                ToDoListSchema.TaskTable.Colmns.USER+" , "+
-                ToDoListSchema.TaskTable.Colmns.USERPASS +" , "+
-                ToDoListSchema.TaskTable.Colmns.UUID +" , "+
-                ToDoListSchema.TaskTable.Colmns.TITLE +" , "+
-                ToDoListSchema.TaskTable.Colmns.DESCRIPTION +" , "+
-                ToDoListSchema.TaskTable.Colmns.ISDONE +" , "+
-                ToDoListSchema.TaskTable.Colmns.DATE +
+                " _id Integer primary key autoincrement ,  "+
+
+                ToDoListSchema.TaskTable.Colns.UUID +" , "+
+                ToDoListSchema.TaskTable.Colns.TITLE +" , "+
+                ToDoListSchema.TaskTable.Colns.DESCRIPTION +" , "+
+                ToDoListSchema.TaskTable.Colns.ISDONE +" , "+
+                ToDoListSchema.TaskTable.Colns.DATE +" , "+
+                ToDoListSchema.TaskTable.Colns.USER_ID +" , "+
+                " FOREIGN KEY ( "+ToDoListSchema.TaskTable.Colns.USER_ID+" ) REFERENCES "+ToDoListSchema.UserTable.NAME+
+                "("+ToDoListSchema.UserTable.Colmns.USER_ID+")"+
+
 
                 " ) ;"
         );
 
+        db.execSQL(" create table "+ToDoListSchema.UserTable.NAME+" ( "+
+//autoincrement
+                ToDoListSchema.UserTable.Colmns.USER_ID + " primary key  ,  "+
+                ToDoListSchema.UserTable.Colmns.USERNAME + " , "+
+                ToDoListSchema.UserTable.Colmns.USERPASS+" , "+
+                ToDoListSchema.UserTable.Colmns.USEREMAIL +
+                " ) ;"
+        );
     }
 
     @Override

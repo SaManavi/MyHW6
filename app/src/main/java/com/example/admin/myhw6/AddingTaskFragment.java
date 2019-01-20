@@ -4,6 +4,7 @@ package com.example.admin.myhw6;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -11,17 +12,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.admin.myhw6.Model.Task;
 import com.example.admin.myhw6.Model.TaskList;
+import com.example.admin.myhw6.Model.User;
+import com.example.admin.myhw6.Model.UserList;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.UUID;
+
+import static com.example.admin.myhw6.AllTasksFragment.ARG_USER_ID;
 
 
 /**
@@ -36,13 +41,15 @@ public class AddingTaskFragment extends Fragment {
     private static final int REQ_DATE_PICKER = 2;
     private static final int REQ_TIME_PICKER =3 ;
 
+    private User mCurrentUser;
+
 
     private TextView mAddTaskTitle;
     private TextView mAddTaskDes;
     private Button mAddTaskDate;
     private Button mAddTaskTime;
     private Button mConfirm;
-//    private Switch mIsDone;
+    //    private Switch mIsDone;
     private Task mNewTask;
     private Date mSetDate;
     private int year;
@@ -50,17 +57,38 @@ public class AddingTaskFragment extends Fragment {
     private int day;
     private int hour;
     private int min;
+    private UUID mCurUsId;
+
 
 
     public AddingTaskFragment() {
         // Required empty public constructor
     }
 
+    public static AddingTaskFragment newInstance(UUID userId) {
+        Bundle args = new Bundle();
+        args.putSerializable(ARG_USER_ID, userId);
+
+        AddingTaskFragment fragment = new AddingTaskFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+
+        UUID userId = (UUID) getArguments().getSerializable(ARG_USER_ID);
+        mCurrentUser = UserList.getInstance(getActivity()).getUserById(userId);
+        mCurUsId=userId;
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
 
         View v=inflater.inflate(R.layout.fragment_adding_task, container, false);
 
@@ -82,8 +110,7 @@ public class AddingTaskFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-
-                    mConfirm.setEnabled(true);
+                mConfirm.setEnabled(true);
             }
 
             @Override
@@ -92,20 +119,28 @@ public class AddingTaskFragment extends Fragment {
             }
         });
 
-    mConfirm.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if(mSetDate==null)mSetDate=new Date();
-            mNewTask = new Task(mAddTaskTitle.getText().toString(), mAddTaskDes.getText().toString(), false ,mSetDate);// date and time?????????????
-            TaskList.getInstance(getActivity()).addTask(mNewTask);
-            Toast.makeText(getActivity(), "Your task has been added.", Toast.LENGTH_SHORT).show();
-            mConfirm.setEnabled(false);
-            mAddTaskTitle.setEnabled(false);
-            mAddTaskDes.setEnabled(false);
-            mAddTaskDate.setEnabled(false);
-            mAddTaskTime.setEnabled(false);
-        }
-    });
+        mConfirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mAddTaskTitle.getText().length()==0) Toast.makeText(getActivity(), "Enter Title!", Toast.LENGTH_SHORT).show();
+                else {
+                    if (mSetDate == null) mSetDate = new Date();
+                    mNewTask = new Task(mAddTaskTitle.getText().toString(), mAddTaskDes.getText().toString(), false, mSetDate, mCurUsId);
+                    TaskList.getInstance(getActivity()).addTask(mNewTask);
+                    Toast.makeText(getActivity(), "Your task has been added...", Toast.LENGTH_SHORT).show();
+                    mConfirm.setEnabled(false);
+                    mAddTaskTitle.setEnabled(false);
+                    mAddTaskDes.setEnabled(false);
+                    mAddTaskDate.setEnabled(false);
+                    mAddTaskTime.setEnabled(false);
+
+                    Intent myIntent = MainActivity.newIntent(getActivity(), mNewTask.getUserId());
+                    startActivity(myIntent);
+//            getActivity().finish();
+
+                }
+            }
+        });
 
 
 
@@ -172,16 +207,16 @@ public class AddingTaskFragment extends Fragment {
             Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
             calendar.setTime(date);
 
-             hour = calendar.get(Calendar.HOUR);
-             min = calendar.get(Calendar.MINUTE);
+            hour = calendar.get(Calendar.HOUR);
+            min = calendar.get(Calendar.MINUTE);
 
 
-        mSetDate = new GregorianCalendar(year, month, day,hour,min).getTime();
+            mSetDate = new GregorianCalendar(year, month, day,hour,min).getTime();
 
-        SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy/MM/dd ");
-        Date GetDate = mSetDate;
-        String DateStr = mDateFormat.format(GetDate);
-        mAddTaskDate.setText(DateStr);
+            SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy/MM/dd ");
+            Date GetDate = mSetDate;
+            String DateStr = mDateFormat.format(GetDate);
+            mAddTaskDate.setText(DateStr);
 
             SimpleDateFormat mTimeFormat = new SimpleDateFormat(" hh:mm a ");
             Date GetDate2 = mSetDate;

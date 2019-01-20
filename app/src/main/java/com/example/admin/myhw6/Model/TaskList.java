@@ -23,6 +23,8 @@ public class TaskList {
 
 
 
+
+
     private TaskList(Context c) {
         mContext=c.getApplicationContext();
         mDatabase=new ToDoListBaseHelper(mContext).getWritableDatabase();
@@ -38,13 +40,16 @@ public class TaskList {
         return instance;
     }
 
-    public List<Task> getTasksList() {
+    public List<Task> getTasksList(UUID userId) {
         mTaskLists=new ArrayList<>();
+        String whereClause= ToDoListSchema.TaskTable.Colns.USER_ID +" = ? "  ;
+        String[] whereArgs =new String[]{userId.toString()};
+
         Cursor myCursor= mDatabase.query(
                 ToDoListSchema.TaskTable.NAME ,
                 null ,
-                null ,
-                null ,
+           whereClause ,
+            whereArgs ,
                 null ,
                 null ,
                 null );
@@ -56,17 +61,19 @@ public class TaskList {
             myCursor.moveToFirst();
 
             while (!myCursor.isAfterLast()){
-                UUID uuid=UUID.fromString(myCursor.getString(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colmns.UUID)));
-                String title=myCursor.getString(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colmns.TITLE));
-                String des=myCursor.getColumnName(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colmns.DESCRIPTION));
-                Date date=new Date(myCursor.getLong(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colmns.DATE)));
-                boolean isDone=myCursor.getInt(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colmns.ISDONE))==0?false:true;
+                UUID uuid=UUID.fromString(myCursor.getString(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colns.UUID)));
+                String title=myCursor.getString(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colns.TITLE));
+                String des=myCursor.getColumnName(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colns.DESCRIPTION));
+                Date date=new Date(myCursor.getLong(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colns.DATE)));
+                boolean isDone=myCursor.getInt(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colns.ISDONE))==0?false:true;
+                UUID user_Id=UUID.fromString(myCursor.getString(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colns.USER_ID)));
 
                 Task task=new Task(uuid);
                 task.setTitle(title);
                 task.setDescription(des);
                 task.setDate(date);
                 task.setIsdone(isDone);
+                task.setUserId(user_Id);
 
                 mTaskLists.add(task);
 
@@ -82,10 +89,55 @@ public class TaskList {
 
     }
 
-    public List<Task> getDoneTasksList() {
+//    public List<Task> getTasksList() {
+//        mTaskLists=new ArrayList<>();
+//        Cursor myCursor= mDatabase.query(
+//                ToDoListSchema.TaskTable.NAME ,
+//                null ,
+//                null ,
+//                null ,
+//                null ,
+//                null ,
+//                null );
+//
+//        try {
+//            if(myCursor.getCount()==0)
+//                return mTaskLists;
+//
+//            myCursor.moveToFirst();
+//
+//            while (!myCursor.isAfterLast()){
+//                UUID uuid=UUID.fromString(myCursor.getString(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colmns.UUID)));
+//                String title=myCursor.getString(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colmns.TITLE));
+//                String des=myCursor.getColumnName(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colmns.DESCRIPTION));
+//                Date date=new Date(myCursor.getLong(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colmns.DATE)));
+//                boolean isDone=myCursor.getInt(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colmns.ISDONE))==0?false:true;
+//
+//                Task task=new Task(uuid);
+//                task.setTitle(title);
+//                task.setDescription(des);
+//                task.setDate(date);
+//                task.setIsdone(isDone);
+//
+//                mTaskLists.add(task);
+//
+//                myCursor.moveToNext();
+//            }
+//        }
+//
+//        finally {
+//            myCursor.close();
+//        }
+//
+//        return mTaskLists;
+//
+//    }
+
+    public List<Task> getDoneTasksList(UUID userId) {
+        List<Task> TaskListsOfDB =getTasksList(userId) ;
         List<Task> doneTaskLists = new ArrayList<>();
 
-        for (Task dt : mTaskLists) {
+        for (Task dt : TaskListsOfDB) {
             if (dt.isIsdone()) {
                 doneTaskLists.add(dt);
             }
@@ -97,10 +149,11 @@ public class TaskList {
     }
 
 
-    public List<Task> getUnDoneTasksList() {
+    public List<Task> getUnDoneTasksList(UUID userId) {
+        List<Task> TaskListsOfDB =getTasksList(userId) ;
         List<Task> unDoneTaskLists = new ArrayList<>();
 
-        for (Task dt : mTaskLists) {
+        for (Task dt : TaskListsOfDB) {
             if (!dt.isIsdone()) {
                 unDoneTaskLists.add(dt);
             }
@@ -111,7 +164,7 @@ public class TaskList {
     }
 
     public Task getTaskById(UUID id) {
-        String whereClause=ToDoListSchema.TaskTable.Colmns.UUID+ "= ?"  ;
+        String whereClause=ToDoListSchema.TaskTable.Colns.UUID+ "= ?"  ;
         String[] whereArgs =new String[]{id.toString()};
 
         Cursor myCursor= mDatabase.query(ToDoListSchema.TaskTable.NAME,
@@ -127,17 +180,20 @@ public class TaskList {
                 return null;
 
             myCursor.moveToFirst();
-            UUID uuid=UUID.fromString(myCursor.getString(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colmns.UUID)));
-            String title=myCursor.getString(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colmns.TITLE));
-            String des=myCursor.getColumnName(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colmns.DESCRIPTION));
-            Date date=new Date(myCursor.getLong(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colmns.DATE)));
-            boolean isDone=myCursor.getInt(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colmns.ISDONE))==0?false:true;
+            UUID uuid=UUID.fromString(myCursor.getString(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colns.UUID)));
+            String title=myCursor.getString(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colns.TITLE));
+            String des=myCursor.getColumnName(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colns.DESCRIPTION));
+            Date date=new Date(myCursor.getLong(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colns.DATE)));
+            boolean isDone=myCursor.getInt(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colns.ISDONE))==0?false:true;
+            UUID userId=UUID.fromString(myCursor.getString(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colns.USER_ID)));
+
 
             Task task=new Task(uuid);
             task.setTitle(title);
             task.setDescription(des);
             task.setDate(date);
             task.setIsdone(isDone);
+            task.setUserId(userId);
 
             return task;
 
@@ -154,7 +210,13 @@ public class TaskList {
 
     }
 
-    public void removeTask(UUID id) {
+    public void removeTask(UUID userId) {
+        String whereClause=ToDoListSchema.TaskTable.Colns.USER_ID+ "= ?"  ;
+        String[] whereArgs =new String[]{userId.toString()};
+
+        mDatabase.delete(ToDoListSchema.TaskTable.NAME,
+                whereClause,
+                whereArgs);
 
     }
 
@@ -164,23 +226,67 @@ public class TaskList {
 
     public ContentValues getContentValues(Task t){
         ContentValues myValue=new ContentValues();
-        myValue.put(ToDoListSchema.TaskTable.Colmns.UUID,t.getTaskUUID().toString());
-        myValue.put(ToDoListSchema.TaskTable.Colmns.TITLE, t.getTitle());
-        myValue.put(ToDoListSchema.TaskTable.Colmns.DESCRIPTION,t.getDescription());
-        myValue.put(ToDoListSchema.TaskTable.Colmns.DATE,t.getDate().getTime());
-        myValue.put(ToDoListSchema.TaskTable.Colmns.ISDONE,t.isIsdone() ? 1:0);
+        myValue.put(ToDoListSchema.TaskTable.Colns.USER_ID,t.getUserId().toString());
+        myValue.put(ToDoListSchema.TaskTable.Colns.UUID,t.getTaskUUID().toString());
+        myValue.put(ToDoListSchema.TaskTable.Colns.TITLE, t.getTitle());
+        myValue.put(ToDoListSchema.TaskTable.Colns.DESCRIPTION,t.getDescription());
+        myValue.put(ToDoListSchema.TaskTable.Colns.DATE,t.getDate().getTime());
+        myValue.put(ToDoListSchema.TaskTable.Colns.ISDONE,t.isIsdone() ? 1:0);
 
         return myValue;
 
     }
 
     public void update(Task t){
-        String whereClause=ToDoListSchema.TaskTable.Colmns.UUID +" = ?";
+        String whereClause=ToDoListSchema.TaskTable.Colns.UUID +" = ?";
         mDatabase.update(ToDoListSchema.TaskTable.NAME,
                 getContentValues(t),whereClause,
                 new String[] {t.getTaskUUID().toString()});
 
     }
+
+
+//    public Task getTaskListOfUserWithPass(String user,String pass) {
+//        String whereClause=ToDoListSchema.TaskTable.Colns.USER_ID + "= ? AND "+ToDoListSchema.TaskTable.Colns.USERPASS+ " = ?"  ;
+//        String[] whereArgs =new String[]{user,pass};
+//
+//        Cursor myCursor= mDatabase.query(ToDoListSchema.TaskTable.NAME,
+//                null,
+//                whereClause,
+//                whereArgs,
+//                null,
+//                null,
+//                null);
+//
+//        try {
+//            if(myCursor.getCount()==0)
+//                return null;
+//
+//            myCursor.moveToFirst();
+//
+//
+//            UUID uuid=UUID.fromString(myCursor.getString(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colns.UUID)));
+//            String title=myCursor.getString(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colns.TITLE));
+//            String des=myCursor.getColumnName(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colns.DESCRIPTION));
+//            Date date=new Date(myCursor.getLong(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colns.DATE)));
+//            boolean isDone=myCursor.getInt(myCursor.getColumnIndex(ToDoListSchema.TaskTable.Colns.ISDONE))==0?false:true;
+//
+//            Task task=new Task(uuid);
+//            task.setTitle(title);
+//            task.setDescription(des);
+//            task.setDate(date);
+//            task.setIsdone(isDone);
+//
+//            return task;
+//
+//        }
+//
+//        finally {
+//            myCursor.close();
+//        }
+////        return null;
+//    }
+
 
 
 }

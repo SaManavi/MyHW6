@@ -4,7 +4,9 @@ package com.example.admin.myhw6;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -24,17 +26,20 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
-
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TaskDetailFragment extends Fragment {
+public class DialogOfTaskEditingFragment extends DialogFragment {
+
 
 
     public static final String TASK_ID = "com.example.admin.myhw6.Task uuid as Id";
     private static final String DIALOG_TAG = "DialogDate";
     private static final int REQ_DATE_PICKER = 0;
     private static final int REQ_TIME_PICKER =1 ;
+
+
+
 
     private Task mCurrentTask;
     private TextView mTaskTitle;
@@ -47,25 +52,19 @@ public class TaskDetailFragment extends Fragment {
     private Button mTaskTime;
     private Button mConfirm;
 
+    public static DialogOfTaskEditingFragment newInstance(UUID TaskId) {
 
-
-
-
-    public static TaskDetailFragment newInstance(UUID TaskId){
-
-        TaskDetailFragment myFrag=new TaskDetailFragment();
+        DialogOfTaskEditingFragment myFrag=new DialogOfTaskEditingFragment();
         Bundle args=new Bundle();
         args.putSerializable(TASK_ID,TaskId);
         myFrag.setArguments(args);
         return myFrag;
+
     }
 
-
-
-    public TaskDetailFragment() {
+    public DialogOfTaskEditingFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,14 +72,21 @@ public class TaskDetailFragment extends Fragment {
 
         UUID mCurrentTaskId = (UUID) getArguments().getSerializable(TASK_ID);
         mCurrentTask=TaskList.getInstance(getActivity()).getTaskById(mCurrentTaskId);
+        //        View v=LayoutInflater.from(getActivity()).inflate(R.layout.fragment_task_detail,null);
+
+
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_task_detail, container);
 
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View v= inflater.inflate(R.layout.fragment_task_detail, container, false);// show task detail...
+    public void onViewCreated(@NonNull View v, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(v, savedInstanceState);
 
 
         mTaskTitle=v.findViewById(R.id.task_detail_title);
@@ -94,11 +100,14 @@ public class TaskDetailFragment extends Fragment {
         mConfirm=v.findViewById(R.id.task_detail_confirm);
 
 
+
         mConfirm.setVisibility(View.INVISIBLE);
         if(mCurrentTask.isIsdone()==true)mDone.setEnabled(false);
         mIsDoneCheckBox.setChecked(mCurrentTask.isIsdone());
         mTaskTitle.setText(mCurrentTask.getTitle());
         mTaskDes.setText(mCurrentTask.getDescription());
+
+
 
         SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy/MM/dd ");
         SimpleDateFormat mTimeFormat = new SimpleDateFormat(" hh:mm a ");
@@ -115,11 +124,19 @@ public class TaskDetailFragment extends Fragment {
         mTaskDate.setEnabled(false);
         mTaskTime.setEnabled(false);
 
+
+
+
+
         mDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mCurrentTask.setIsdone(true);
                 mDone.setEnabled(false);
+
+                Intent myIntent=MainActivity.newIntent(getActivity(),mCurrentTask.getUserId());
+                startActivity(myIntent);
+                getActivity().finish();
             }
         });
 
@@ -133,13 +150,15 @@ public class TaskDetailFragment extends Fragment {
                 mTaskTime.setEnabled(true);
                 mConfirm.setVisibility(View.VISIBLE);
 
+
+
             }
         });
 
         mDel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               TaskList.getInstance(getActivity()).removeTask(mCurrentTask.getTaskUUID());
+                TaskList.getInstance(getActivity()).removeTask(mCurrentTask.getTaskUUID());
                 Toast.makeText(getActivity(), "Your Task has been deleted.", Toast.LENGTH_SHORT).show();
             }
         });
@@ -153,11 +172,14 @@ public class TaskDetailFragment extends Fragment {
                 mTaskDate.setEnabled(false);
                 mTaskTime.setEnabled(false);
                 mConfirm.setEnabled(false);
+                Toast.makeText(getActivity(), "edited..."+mCurrentTask.getTitle(), Toast.LENGTH_SHORT).show();
                 Toast.makeText(getActivity(), "Your task has been edited.", Toast.LENGTH_SHORT).show();
+
+
 
                 Intent myIntent=MainActivity.newIntent(getActivity(),mCurrentTask.getUserId());
                 startActivity(myIntent);
-//              getActivity().finish();
+              getActivity().finish();
 
             }
         });
@@ -211,7 +233,7 @@ public class TaskDetailFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 DatePickerFragment datePickerFragment = DatePickerFragment.newInstance(mCurrentTask.getDate());
-                datePickerFragment.setTargetFragment(TaskDetailFragment.this,
+                datePickerFragment.setTargetFragment(DialogOfTaskEditingFragment.this,
                         REQ_DATE_PICKER);
                 datePickerFragment.show(getFragmentManager(), DIALOG_TAG);
             }
@@ -222,7 +244,7 @@ public class TaskDetailFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 TimePickerFragment timePickFrag = TimePickerFragment.newInstance(mCurrentTask.getDate());
-                timePickFrag.setTargetFragment(TaskDetailFragment.this,
+                timePickFrag.setTargetFragment(DialogOfTaskEditingFragment.this,
                         REQ_TIME_PICKER);
                 timePickFrag.show(getFragmentManager(), DIALOG_TAG);
 
@@ -231,10 +253,10 @@ public class TaskDetailFragment extends Fragment {
 
 
 
-
-
-        return v;
     }
+
+
+
 
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -280,4 +302,5 @@ public class TaskDetailFragment extends Fragment {
         TaskList.getInstance(getActivity()).update(mCurrentTask);
 
     }
+
 }

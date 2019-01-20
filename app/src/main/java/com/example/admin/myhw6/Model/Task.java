@@ -6,6 +6,7 @@ import java.util.UUID;
 public class Task {
 
     private UUID mTaskUUID;
+    private UUID mUserId;
     //    private int mTaskId;
     private String mTitle;
     private String mDescription;
@@ -27,12 +28,14 @@ public class Task {
 
     }
 
-    public Task( String title, String description,boolean isdone, Date date) {
+
+    public Task( String title, String description,boolean isdone, Date date, UUID userId) {
         this();
         mTitle = title;
         mDescription = description;
         mIsdone=isdone;
         mDate = date;
+        mUserId=userId;
     }
 
     public UUID getTaskUUID() {
@@ -75,5 +78,11 @@ public class Task {
         mIsdone = isdone;
     }
 
+    public UUID getUserId() {
+        return mUserId;
+    }
 
+    public void setUserId(UUID userId) {
+        mUserId = userId;
+    }
 }
