@@ -3,6 +3,7 @@
     package="com.example.admin.myhw6">
 
     <application
+        android:name=".ORM.App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher2"
         android:label="My To Do App"
