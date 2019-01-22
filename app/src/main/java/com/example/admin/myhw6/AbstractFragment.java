@@ -40,7 +40,7 @@ public abstract class AbstractFragment extends Fragment {
     public AbstractFragment() {
 // Required empty public constructor
     }
-abstract UUID getCurentUserId();
+abstract Long getCurentUserId();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,7 +65,7 @@ abstract UUID getCurentUserId();
              //   Toast.makeText(getActivity(), "AbsFra u-id: "+getCurentUserId().toString(), Toast.LENGTH_SHORT).show();
                 Intent myInt=AddingTaskActivity.newIntent(getActivity(),getCurentUserId());
                 startActivity(myInt);
-//                getActivity().finish();
+                getActivity().finish();
             }
         });
 
@@ -112,7 +112,7 @@ abstract UUID getCurentUserId();
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                   Intent myInt= TaskDetailActivity.newIntent(getActivity(), mCurrentTask.getTaskUUID(),1);
+                   Intent myInt= TaskDetailActivity.newIntent(getActivity(), mCurrentTask.getTaskId(),1);
                     startActivity(myInt);
                     getActivity().finish();
 

@@ -52,7 +52,7 @@ public class DialogOfTaskEditingFragment extends DialogFragment {
     private Button mTaskTime;
     private Button mConfirm;
 
-    public static DialogOfTaskEditingFragment newInstance(UUID TaskId) {
+    public static DialogOfTaskEditingFragment newInstance(Long TaskId) {
 
         DialogOfTaskEditingFragment myFrag=new DialogOfTaskEditingFragment();
         Bundle args=new Bundle();
@@ -70,7 +70,7 @@ public class DialogOfTaskEditingFragment extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        UUID mCurrentTaskId = (UUID) getArguments().getSerializable(TASK_ID);
+        Long mCurrentTaskId = (Long) getArguments().getSerializable(TASK_ID);
         mCurrentTask=TaskList.getInstance(getActivity()).getTaskById(mCurrentTaskId);
         //        View v=LayoutInflater.from(getActivity()).inflate(R.layout.fragment_task_detail,null);
 
@@ -102,16 +102,16 @@ public class DialogOfTaskEditingFragment extends DialogFragment {
 
 
         mConfirm.setVisibility(View.INVISIBLE);
-        if(mCurrentTask.isIsdone()==true)mDone.setEnabled(false);
-        mIsDoneCheckBox.setChecked(mCurrentTask.isIsdone());
+        if(mCurrentTask.getMIsdone()==true)mDone.setEnabled(false);
+        mIsDoneCheckBox.setChecked(mCurrentTask.getMIsdone());
         mTaskTitle.setText(mCurrentTask.getTitle());
-        mTaskDes.setText(mCurrentTask.getDescription());
+        mTaskDes.setText(mCurrentTask.getMDescription());
 
 
 
         SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy/MM/dd ");
         SimpleDateFormat mTimeFormat = new SimpleDateFormat(" hh:mm a ");
-        Date GetDate = mCurrentTask.getDate();
+        Date GetDate = mCurrentTask.getMDate();
         String DateStr = mDateFormat.format(GetDate);
         String TimeStr=mTimeFormat.format(GetDate);
         mTaskDate.setText("Date Of Task:   "+DateStr);
@@ -131,7 +131,7 @@ public class DialogOfTaskEditingFragment extends DialogFragment {
         mDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCurrentTask.setIsdone(true);
+                mCurrentTask.setMIsdone(true);
                 mDone.setEnabled(false);
 
                 Intent myIntent=MainActivity.newIntent(getActivity(),mCurrentTask.getUserId());
@@ -158,8 +158,12 @@ public class DialogOfTaskEditingFragment extends DialogFragment {
         mDel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TaskList.getInstance(getActivity()).removeTask(mCurrentTask.getTaskUUID());
+                TaskList.getInstance(getActivity()).removeTask(mCurrentTask);//???
                 Toast.makeText(getActivity(), "Your Task has been deleted.", Toast.LENGTH_SHORT).show();
+
+                Intent myIntent=MainActivity.newIntent(getActivity(),mCurrentTask.getUserId());
+                startActivity(myIntent);
+//              getActivity().finish();
             }
         });
 
@@ -193,7 +197,7 @@ public class DialogOfTaskEditingFragment extends DialogFragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mCurrentTask.setTitle(s.toString());
+                mCurrentTask.setMTitle(s.toString());
             }
 
             @Override
@@ -211,7 +215,7 @@ public class DialogOfTaskEditingFragment extends DialogFragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mCurrentTask.setDescription(s.toString());
+                mCurrentTask.setMDescription(s.toString());
             }
 
             @Override
@@ -224,7 +228,7 @@ public class DialogOfTaskEditingFragment extends DialogFragment {
         mIsDoneCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mCurrentTask.setIsdone(isChecked);
+                mCurrentTask.setMIsdone(isChecked);
                 mDone.setEnabled(!isChecked);
             }
         });
@@ -232,7 +236,7 @@ public class DialogOfTaskEditingFragment extends DialogFragment {
         mTaskDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatePickerFragment datePickerFragment = DatePickerFragment.newInstance(mCurrentTask.getDate());
+                DatePickerFragment datePickerFragment = DatePickerFragment.newInstance(mCurrentTask.getMDate());
                 datePickerFragment.setTargetFragment(DialogOfTaskEditingFragment.this,
                         REQ_DATE_PICKER);
                 datePickerFragment.show(getFragmentManager(), DIALOG_TAG);
@@ -243,7 +247,7 @@ public class DialogOfTaskEditingFragment extends DialogFragment {
         mTaskTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TimePickerFragment timePickFrag = TimePickerFragment.newInstance(mCurrentTask.getDate());
+                TimePickerFragment timePickFrag = TimePickerFragment.newInstance(mCurrentTask.getMDate());
                 timePickFrag.setTargetFragment(DialogOfTaskEditingFragment.this,
                         REQ_TIME_PICKER);
                 timePickFrag.show(getFragmentManager(), DIALOG_TAG);
@@ -267,11 +271,11 @@ public class DialogOfTaskEditingFragment extends DialogFragment {
 
         if (requestCode == REQ_DATE_PICKER) {
             Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
-            mCurrentTask.setDate(date);
+            mCurrentTask.setMDate(date);
 
             SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy/MM/dd ");
 
-            Date GetDate = mCurrentTask.getDate();
+            Date GetDate = mCurrentTask.getMDate();
             String DateStr = mDateFormat.format(GetDate);
 
             mTaskDate.setText(DateStr);
@@ -282,11 +286,11 @@ public class DialogOfTaskEditingFragment extends DialogFragment {
 
         if (requestCode == REQ_TIME_PICKER) {
             Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
-            mCurrentTask.setDate(date);
+            mCurrentTask.setMDate(date);
 
 
             SimpleDateFormat mTimeFormat = new SimpleDateFormat(" hh:mm a ");
-            Date GetDate = mCurrentTask.getDate();
+            Date GetDate = mCurrentTask.getMDate();
 
             String TimeStr=mTimeFormat.format(GetDate);
 

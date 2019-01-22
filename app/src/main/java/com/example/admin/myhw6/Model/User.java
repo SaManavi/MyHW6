@@ -12,6 +12,7 @@ import org.greenrobot.greendao.annotation.Id;
 
 import java.util.UUID;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Unique;
 
 
 @Entity
@@ -20,7 +21,7 @@ public class User {
 //    private UUID id;
 
 
-
+@Unique
     private String userName;
     private String email;
     private String password;

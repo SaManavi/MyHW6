@@ -13,7 +13,7 @@ public class TaskDetailActivity extends AppCompatActivity {
     private static final String FRAG_TO_SHOW ="com.example.admin.myhw6.Extra int for showing fragment" ;
 
 
-    public static Intent newIntent(Context c, UUID taskId, int i){
+    public static Intent newIntent(Context c, Long taskId, int i){
         Intent intent=new Intent(c,TaskDetailActivity.class);
         intent.putExtra(EXTRA_TASK,taskId);
         intent.putExtra(FRAG_TO_SHOW,i);
@@ -27,7 +27,7 @@ public class TaskDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_detail);
-            UUID tId= (UUID) getIntent().getSerializableExtra(EXTRA_TASK);
+            Long tId= (Long) getIntent().getSerializableExtra(EXTRA_TASK);
         int fragType=  getIntent().getIntExtra(FRAG_TO_SHOW,0);
 
         FragmentManager myFragMan=getSupportFragmentManager();

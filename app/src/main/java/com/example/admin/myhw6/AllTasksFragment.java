@@ -22,7 +22,7 @@ import java.util.UUID;
 public class AllTasksFragment extends AbstractFragment {
 
     private User mcurrentUser;
-    private UUID mCurUsId;
+    private Long mCurUsId;
 
     public static final String ARG_USER_ID = "ARG_USER_ID";
 
@@ -30,7 +30,7 @@ public class AllTasksFragment extends AbstractFragment {
 // Required empty public constructor
     }
 
-    public static AllTasksFragment newInstance(UUID userId) {
+    public static AllTasksFragment newInstance(Long userId) {
         Bundle args = new Bundle();
         args.putSerializable(ARG_USER_ID, userId);
 
@@ -53,7 +53,7 @@ public class AllTasksFragment extends AbstractFragment {
         switch (item.getItemId()) {
 
             case R.id.del_task:
-                TaskList.getInstance(getActivity()).removeTask(mCurUsId);
+                TaskList.getInstance(getActivity()).delTasks(mCurUsId);
                 Intent myIntent = MainActivity.newIntent(getActivity(),mCurUsId);
                 startActivity(myIntent);
             getActivity().finish();
@@ -70,7 +70,7 @@ public class AllTasksFragment extends AbstractFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        UUID userId = (UUID) getArguments().getSerializable(ARG_USER_ID);
+        Long userId = (Long) getArguments().getSerializable(ARG_USER_ID);
         // mCurrentUser = UserList.getInstance(getActivity()).getUserById(userId);
         mCurUsId=userId;
 
@@ -79,7 +79,7 @@ public class AllTasksFragment extends AbstractFragment {
 
 
     @Override
-    public UUID getCurentUserId() {
+    public Long getCurentUserId() {
         return mCurUsId;
     }
 

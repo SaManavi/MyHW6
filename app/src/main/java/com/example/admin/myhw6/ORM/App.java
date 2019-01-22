@@ -17,7 +17,7 @@ public class App extends Application {
         super.onCreate();
 
         MyDevOpenHelper myDevOpenHelper=new MyDevOpenHelper(this,"ToDoListDataBase");
-        Database mDatabase  =myDevOpenHelper.getReadableDb();
+        Database mDatabase  =myDevOpenHelper.getWritableDb();
 
         mydaoSession=new DaoMaster(mDatabase).newSession();
         myapp=this;

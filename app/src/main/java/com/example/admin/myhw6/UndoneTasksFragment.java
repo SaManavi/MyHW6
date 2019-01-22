@@ -19,7 +19,7 @@ import static com.example.admin.myhw6.AllTasksFragment.ARG_USER_ID;
 public class UndoneTasksFragment extends AbstractFragment {
 
 
-    private UUID mCurUsId;
+    private Long mCurUsId;
 
     public UndoneTasksFragment() {
 // Required empty public constructor
@@ -29,7 +29,7 @@ public class UndoneTasksFragment extends AbstractFragment {
 
 
 
-    public static UndoneTasksFragment newInstance(UUID userId) {
+    public static UndoneTasksFragment newInstance(Long userId) {
         Bundle args = new Bundle();
         args.putSerializable(ARG_USER_ID, userId);
 
@@ -42,7 +42,7 @@ public class UndoneTasksFragment extends AbstractFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        UUID userId = (UUID) getArguments().getSerializable(ARG_USER_ID);
+        Long userId = (Long) getArguments().getSerializable(ARG_USER_ID);
 //        mCurrentUser = UserList.getInstance(getActivity()).getUserById(userId);
         mCurUsId=userId;
 
@@ -51,8 +51,8 @@ public class UndoneTasksFragment extends AbstractFragment {
 
 
     @Override
-    public UUID getCurentUserId() {
-        return mCurrentUser.getId();
+    public Long getCurentUserId() {
+        return mCurrentUser.getUserId();
     }
 
 

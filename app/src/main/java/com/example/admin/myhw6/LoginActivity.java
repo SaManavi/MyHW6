@@ -22,6 +22,7 @@ import com.example.admin.myhw6.Model.User;
 import com.example.admin.myhw6.Model.UserList;
 import com.example.admin.myhw6.database.ToDoListBaseHelper;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -74,40 +75,47 @@ public class LoginActivity extends AppCompatActivity {
                 String Password = editTextPassword.getText().toString();
 
 
-//                UUID correctUserId = UserList.getInstance(LoginActivity.this).userExistId(Name,Password);
+//                Long correctUserId = UserList.getInstance(LoginActivity.this).userExistId(Name,Password);
 
-                User user=UserList.getInstance(LoginActivity.this).getUserByName(Name);
+                List<User> userList =UserList.getInstance(LoginActivity.this).getUserByName(Name);
 
+                if (userList != null) {
+                    for (int i = 0; i < userList.size(); i++) {
+                        User user = userList.get(i);
 
-                if (user!=null) {
-                    UUID correctUserId =user.getId();
+                        Long correctUserId = user.getUserId();
 
-                    if(user.getPassword().equals(Password)) {
+                        if (user.getPassword().equals(Password)) {
 
-                        Toast.makeText(LoginActivity.this, "true user: ", Toast.LENGTH_SHORT).show();
-                        Intent myInt = MainActivity.newIntent(LoginActivity.this, correctUserId);
-                        startActivity(myInt);
-                        finish();
+//                        Toast.makeText(LoginActivity.this, "true user: ", Toast.LENGTH_SHORT).show();
+                            Intent myInt = MainActivity.newIntent(LoginActivity.this, correctUserId);
+                            startActivity(myInt);
+                            finish();
+                        }
+                        else {
+                            Toast.makeText(LoginActivity.this, "Please Check Your Password...", Toast.LENGTH_SHORT).show();
+
+                        }
+
                     }
-                    else {
-                        Toast.makeText(LoginActivity.this, "Please Check Your Password...", Toast.LENGTH_SHORT).show();
-
-                    }
-
-                } else {
-
-                   // buttonLogin.setEnabled(false);
-                    Toast.makeText(LoginActivity.this, "Please First Create Your User", Toast.LENGTH_SHORT).show();
-
                 }
-            }
+                    else{
 
+                        // buttonLogin.setEnabled(false);
+                        Toast.makeText(LoginActivity.this, "Please First Create Your User", Toast.LENGTH_SHORT).show();
+
+                    }
+
+
+            }
         });
 
         buttonGuest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=MainActivity.newIntent(LoginActivity.this,UUID.randomUUID());
+                Long guest=Long.MAX_VALUE;
+                Intent intent=MainActivity.newIntent(LoginActivity.this,guest);
+                Toast.makeText(LoginActivity.this, "max long"+guest.toString(), Toast.LENGTH_SHORT).show();
 
                 startActivity(intent);
 

@@ -2,11 +2,13 @@ package com.example.admin.myhw6.Model;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.ToOne;
 
 import java.util.Date;
 import java.util.UUID;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.DaoException;
 
 
 @Entity
@@ -28,26 +30,45 @@ public class Task {
 
     @ToOne(joinProperty = "userId")
     private User users;
+    /** Used to resolve relations */
+    @Generated(hash = 2040040024)
+    private transient DaoSession daoSession;
+    /** Used for active entity operations. */
+    @Generated(hash = 1469429066)
+    private transient TaskDao myDao;
+    @Generated(hash = 73025128)
+    private transient Long users__resolvedKey;
 
 
+//
+//@Keep
+//    public Task(String mTitle, String mDescription, Date mDate, boolean mIsdone,
+//                Long userId) {
+//        this.mTitle = mTitle;
+//        this.mDescription = mDescription;
+//        this.mDate = mDate;
+//        this.mIsdone = mIsdone;
+//        this.taskId = taskId;
+//        this.userId = userId;
+//    }
 
 
-
-    @Generated(hash = 676794248)
-    public Task(String mTitle, String mDescription, Date mDate, boolean mIsdone,
-            Long taskId) {
+    @Generated(hash = 101736849)
+    public Task(String mTitle, String mDescription, Date mDate, boolean mIsdone, Long taskId,
+            Long userId) {
         this.mTitle = mTitle;
         this.mDescription = mDescription;
         this.mDate = mDate;
         this.mIsdone = mIsdone;
         this.taskId = taskId;
+        this.userId = userId;
     }
 
     @Generated(hash = 733837707)
     public Task() {
     }
 
-    public String getMTitle() {
+    public String getTitle() {
         return this.mTitle;
     }
 
@@ -85,6 +106,90 @@ public class Task {
 
     public void setTaskId(Long taskId) {
         this.taskId = taskId;
+    }
+
+    public Long getUserId() {
+        return this.userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    /** To-one relationship, resolved on first access. */
+    @Generated(hash = 1608763732)
+    public User getUsers() {
+        Long __key = this.userId;
+        if (users__resolvedKey == null || !users__resolvedKey.equals(__key)) {
+            final DaoSession daoSession = this.daoSession;
+            if (daoSession == null) {
+                throw new DaoException("Entity is detached from DAO context");
+            }
+            UserDao targetDao = daoSession.getUserDao();
+            User usersNew = targetDao.load(__key);
+            synchronized (this) {
+                users = usersNew;
+                users__resolvedKey = __key;
+            }
+        }
+        return users;
+    }
+
+    /** called by internal mechanisms, do not call yourself. */
+    @Generated(hash = 1178717799)
+    public void setUsers(User users) {
+        synchronized (this) {
+            this.users = users;
+            userId = users == null ? null : users.getUserId();
+            users__resolvedKey = userId;
+        }
+    }
+
+    /**
+     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
+     * Entity must attached to an entity context.
+     */
+    @Generated(hash = 128553479)
+    public void delete() {
+        if (myDao == null) {
+            throw new DaoException("Entity is detached from DAO context");
+        }
+        myDao.delete(this);
+    }
+
+    /**
+     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
+     * Entity must attached to an entity context.
+     */
+    @Generated(hash = 1942392019)
+    public void refresh() {
+        if (myDao == null) {
+            throw new DaoException("Entity is detached from DAO context");
+        }
+        myDao.refresh(this);
+    }
+
+    /**
+     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#update(Object)}.
+     * Entity must attached to an entity context.
+     */
+    @Generated(hash = 713229351)
+    public void update() {
+        if (myDao == null) {
+            throw new DaoException("Entity is detached from DAO context");
+        }
+        myDao.update(this);
+    }
+
+    public String getMTitle() {
+        return this.mTitle;
+    }
+
+    /** called by internal mechanisms, do not call yourself. */
+    @Generated(hash = 1442741304)
+    public void __setDaoSession(DaoSession daoSession) {
+        this.daoSession = daoSession;
+        myDao = daoSession != null ? daoSession.getTaskDao() : null;
     }
 
 

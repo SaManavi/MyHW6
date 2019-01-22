@@ -10,6 +10,7 @@ import android.support.design.widget.TabLayout;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.admin.myhw6.Model.TaskList;
 
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private TabAdapter adapter;
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    private  Long user_Id;
 
 
 
@@ -37,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         adapter = new TabAdapter(getSupportFragmentManager());
 
 
-        UUID user_Id = (UUID) getIntent().getSerializableExtra(EXTRA_USER_ID);
+        user_Id = (Long) getIntent().getSerializableExtra(EXTRA_USER_ID);
 
 
 
@@ -53,9 +55,27 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public static Intent newIntent(Context c, UUID userId) {
+    public static Intent newIntent(Context c, Long userId) {
         Intent intent = new Intent(c, MainActivity.class);
         intent.putExtra(EXTRA_USER_ID, userId);
         return intent;
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if(user_Id==Long.MAX_VALUE){
+            TaskList.getInstance(this).delTasks(user_Id);
+
+        Toast.makeText(this, "Your tasks deleted ... ", Toast.LENGTH_SHORT).show();
+        }
+        finish();
+    }
+
 }

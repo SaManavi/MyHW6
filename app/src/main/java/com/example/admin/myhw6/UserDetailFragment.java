@@ -49,13 +49,18 @@ private User mNewUser;
         mCreateUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mNewUser = new User(mUserName.getText().toString(), mUserPassword.getText().toString(), mEmail.getText().toString());
+                mNewUser = new User();
+                mNewUser.setUserName(mUserName.getText().toString());
+                mNewUser.setPassword(mUserPassword.getText().toString());
+                mNewUser.setEmail(mEmail.getText().toString());
+
                 UserList.getInstance(getActivity()).addUser(mNewUser);
+
                 Toast.makeText(getActivity(), "Your User Account has been created.", Toast.LENGTH_SHORT).show();
-                Toast.makeText(getActivity(), "..."+mNewUser.getUserName()+"/"+mNewUser.getPassword(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity(), "..."+mNewUser.getUserName()+"/"+mNewUser.getPassword(), Toast.LENGTH_SHORT).show();
 
 
-                Intent myIntent=MainActivity.newIntent(getActivity(),mNewUser.getId());
+                Intent myIntent=MainActivity.newIntent(getActivity(),mNewUser.getUserId());
                 startActivity(myIntent);
                 getActivity().finish();
             }

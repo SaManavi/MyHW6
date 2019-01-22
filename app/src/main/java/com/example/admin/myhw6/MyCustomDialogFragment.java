@@ -72,14 +72,14 @@ public class MyCustomDialogFragment extends DialogFragment {
         mDone.setVisibility(View.INVISIBLE);
 
 
-        mIsDoneCheckBox.setChecked(mCurrentTask.isIsdone());
+        mIsDoneCheckBox.setChecked(mCurrentTask.getMIsdone());
         mTaskTitle.setText(mCurrentTask.getTitle());
-        mTaskDes.setText(mCurrentTask.getDescription());
+        mTaskDes.setText(mCurrentTask.getMDescription());
 
 
         SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy/MM/dd ");
         SimpleDateFormat mTimeFormat = new SimpleDateFormat(" hh:mm a ");
-        Date GetDate = mCurrentTask.getDate();
+        Date GetDate = mCurrentTask.getMDate();
         String DateStr = mDateFormat.format(GetDate);
         String TimeStr = mTimeFormat.format(GetDate);
         mTaskDate.setText("Date Of Task:   " + DateStr);
@@ -96,7 +96,7 @@ public class MyCustomDialogFragment extends DialogFragment {
         mEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent myInt= TaskDetailActivity.newIntent(getActivity(), mCurrentTask.getTaskUUID(),2);
+                Intent myInt= TaskDetailActivity.newIntent(getActivity(), mCurrentTask.getTaskId(),2);
                 startActivity(myInt);
                 getActivity().finish();
 

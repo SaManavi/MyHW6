@@ -20,10 +20,10 @@
             <!-- </intent-filter> -->
         </activity>
         <activity android:name=".TaskDetailActivity"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".LoginActivity"
             />
         <activity android:name=".AddingTaskActivity"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".LoginActivity"
             />
         <activity android:name=".LoginActivity">
             <intent-filter>

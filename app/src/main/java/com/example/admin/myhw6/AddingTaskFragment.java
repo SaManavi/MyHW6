@@ -57,7 +57,7 @@ public class AddingTaskFragment extends Fragment {
     private int day;
     private int hour;
     private int min;
-    private UUID mCurUsId;
+    private Long mCurUsId;
 
 
 
@@ -65,7 +65,7 @@ public class AddingTaskFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static AddingTaskFragment newInstance(UUID userId) {
+    public static AddingTaskFragment newInstance(Long userId) {
         Bundle args = new Bundle();
         args.putSerializable(ARG_USER_ID, userId);
 
@@ -80,7 +80,7 @@ public class AddingTaskFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
 
-        UUID userId = (UUID) getArguments().getSerializable(ARG_USER_ID);
+        Long userId = (Long) getArguments().getSerializable(ARG_USER_ID);
         mCurrentUser = UserList.getInstance(getActivity()).getUserById(userId);
         mCurUsId=userId;
 
@@ -125,8 +125,18 @@ public class AddingTaskFragment extends Fragment {
                 if(mAddTaskTitle.getText().length()==0) Toast.makeText(getActivity(), "Enter Title!", Toast.LENGTH_SHORT).show();
                 else {
                     if (mSetDate == null) mSetDate = new Date();
-                    mNewTask = new Task(mAddTaskTitle.getText().toString(), mAddTaskDes.getText().toString(), false, mSetDate, mCurUsId);
+                    mNewTask = new Task();
+                    mNewTask.setMTitle(mAddTaskTitle.getText().toString());
+                    mNewTask.setMDescription(mAddTaskDes.getText().toString());
+                    mNewTask.setMDate(mSetDate);
+                    mNewTask.setMIsdone(false);
+                    mNewTask.setUserId(mCurUsId);
+
                     TaskList.getInstance(getActivity()).addTask(mNewTask);
+
+
+
+
                     Toast.makeText(getActivity(), "Your task has been added...", Toast.LENGTH_SHORT).show();
                     mConfirm.setEnabled(false);
                     mAddTaskTitle.setEnabled(false);
@@ -136,7 +146,7 @@ public class AddingTaskFragment extends Fragment {
 
                     Intent myIntent = MainActivity.newIntent(getActivity(), mNewTask.getUserId());
                     startActivity(myIntent);
-//            getActivity().finish();
+            getActivity().finish();
 
                 }
             }

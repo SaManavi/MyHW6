@@ -12,7 +12,7 @@ import java.util.UUID;
 public class AddingTaskActivity extends AppCompatActivity {
     private static final String EXTRA_USER_ID = "com.example.admin.myhw6.user_id";
 
-    public static Intent newIntent(Context c, UUID userId){
+    public static Intent newIntent(Context c, Long userId){
         Intent intent=new Intent(c,AddingTaskActivity.class);
         intent.putExtra(EXTRA_USER_ID,userId);
         return intent;
@@ -25,7 +25,7 @@ public class AddingTaskActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_detail);
 
-        UUID user_Id = (UUID) getIntent().getSerializableExtra(EXTRA_USER_ID);
+        Long user_Id = (Long) getIntent().getSerializableExtra(EXTRA_USER_ID);
 
 
         FragmentManager myFragMan=getSupportFragmentManager();
