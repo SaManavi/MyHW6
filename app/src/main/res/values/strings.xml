@@ -11,6 +11,10 @@
     <string name="login">Login</string>
     <string name="username">Username</string>
     <string name="register">Register</string>
+
+    <string name="dialog">SEARCH IN TASKS...</string>
+
+
     <string name="back_to_login">Back to Login</string>
 
 

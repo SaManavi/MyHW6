@@ -9,22 +9,21 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.example.admin.myhw6.Model.Task;
-import com.example.admin.myhw6.Model.TaskList;
+import com.example.admin.myhw6.Model.TaskRepository;
 import com.example.admin.myhw6.Model.User;
 
 import java.util.List;
-import java.util.UUID;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class AllTasksFragment extends AbstractFragment {
+    public static final String ARG_USER_ID = "ARG_USER_ID";
 
     private User mcurrentUser;
     private Long mCurUsId;
 
-    public static final String ARG_USER_ID = "ARG_USER_ID";
 
     public AllTasksFragment() {
 // Required empty public constructor
@@ -45,7 +44,6 @@ public class AllTasksFragment extends AbstractFragment {
 
         inflater.inflate(R.menu.task_detail,menu);
 
-        //        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -53,7 +51,7 @@ public class AllTasksFragment extends AbstractFragment {
         switch (item.getItemId()) {
 
             case R.id.del_task:
-                TaskList.getInstance(getActivity()).delTasks(mCurUsId);
+                TaskRepository.getInstance(getActivity()).delTasks(mCurUsId);
                 Intent myIntent = MainActivity.newIntent(getActivity(),mCurUsId);
                 startActivity(myIntent);
             getActivity().finish();
@@ -66,12 +64,14 @@ public class AllTasksFragment extends AbstractFragment {
 
     }
 
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Long userId = (Long) getArguments().getSerializable(ARG_USER_ID);
-        // mCurrentUser = UserList.getInstance(getActivity()).getUserById(userId);
+        // mCurrentUser = UserRepository.getInstance(getActivity()).getUserById(userId);
         mCurUsId=userId;
 
         setHasOptionsMenu(true);
@@ -85,7 +85,7 @@ public class AllTasksFragment extends AbstractFragment {
 
     @Override
     public int AttachingAdapter() {
-        TaskList instance=TaskList.getInstance(getActivity());
+        TaskRepository instance= TaskRepository.getInstance(getActivity());
         List<Task> tl=instance.getTasksList(mCurUsId);
         MyAdapter mAdapt=new MyAdapter(tl);
         mRecyclerView.setAdapter(mAdapt);

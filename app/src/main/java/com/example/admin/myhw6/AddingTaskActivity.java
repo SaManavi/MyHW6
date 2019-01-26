@@ -32,7 +32,7 @@ public class AddingTaskActivity extends AppCompatActivity {
 
         if (myFragMan.findFragmentById(R.id.task_detail_container)==null){
             myFragMan.beginTransaction()
-                    .add(R.id.task_detail_container, new AddingTaskFragment().newInstance(user_Id))
+                    .replace(R.id.task_detail_container, new AddingTaskFragment().newInstance(user_Id))
                     .commit();
         }
 

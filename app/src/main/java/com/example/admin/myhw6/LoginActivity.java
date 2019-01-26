@@ -4,26 +4,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import android.content.Intent;
-import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
-import android.text.Spanned;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.admin.myhw6.Model.TaskList;
 import com.example.admin.myhw6.Model.User;
-import com.example.admin.myhw6.Model.UserList;
-import com.example.admin.myhw6.database.ToDoListBaseHelper;
+import com.example.admin.myhw6.Model.UserRepository;
 
 import java.util.List;
-import java.util.UUID;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -75,9 +65,9 @@ public class LoginActivity extends AppCompatActivity {
                 String Password = editTextPassword.getText().toString();
 
 
-//                Long correctUserId = UserList.getInstance(LoginActivity.this).userExistId(Name,Password);
+//                Long correctUserId = UserRepository.getInstance(LoginActivity.this).userExistId(Name,Password);
 
-                List<User> userList =UserList.getInstance(LoginActivity.this).getUserByName(Name);
+                List<User> userList = UserRepository.getInstance(LoginActivity.this).getUserByName(Name);
 
                 if (userList != null) {
                     for (int i = 0; i < userList.size(); i++) {

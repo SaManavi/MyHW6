@@ -16,15 +16,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.admin.myhw6.Model.Task;
-import com.example.admin.myhw6.Model.TaskList;
+import com.example.admin.myhw6.Model.TaskRepository;
 import com.example.admin.myhw6.Model.User;
-import com.example.admin.myhw6.Model.UserList;
+import com.example.admin.myhw6.Model.UserRepository;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.UUID;
 
 import static com.example.admin.myhw6.AllTasksFragment.ARG_USER_ID;
 
@@ -81,7 +80,7 @@ public class AddingTaskFragment extends Fragment {
 
 
         Long userId = (Long) getArguments().getSerializable(ARG_USER_ID);
-        mCurrentUser = UserList.getInstance(getActivity()).getUserById(userId);
+        mCurrentUser = UserRepository.getInstance(getActivity()).getUserById(userId);
         mCurUsId=userId;
 
     }
@@ -132,7 +131,7 @@ public class AddingTaskFragment extends Fragment {
                     mNewTask.setMIsdone(false);
                     mNewTask.setUserId(mCurUsId);
 
-                    TaskList.getInstance(getActivity()).addTask(mNewTask);
+                    TaskRepository.getInstance(getActivity()).addTask(mNewTask);
 
 
 
@@ -146,7 +145,7 @@ public class AddingTaskFragment extends Fragment {
 
                     Intent myIntent = MainActivity.newIntent(getActivity(), mNewTask.getUserId());
                     startActivity(myIntent);
-            getActivity().finish();
+                    getActivity().finish();
 
                 }
             }

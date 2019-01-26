@@ -1,23 +1,20 @@
 package com.example.admin.myhw6.Model;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.widget.Toast;
 
 import com.example.admin.myhw6.ORM.App;
 import com.example.admin.myhw6.ORM.MyDevOpenHelper;
-import com.example.admin.myhw6.database.ToDoListBaseHelper;
 
 import org.greenrobot.greendao.database.Database;
 
 import java.util.List;
-import java.util.UUID;
 
-public class UserList {
-
+public class UserRepository {
 
 
-    private static UserList instance;
+
+    private static UserRepository instance;
 
     private List<User> mUserList;
 //    private UUID  correctUserId;
@@ -31,7 +28,7 @@ public class UserList {
 
 
 
-    private UserList(Context c) {
+    private UserRepository(Context c) {
         mContext=c.getApplicationContext();
 
         MyDevOpenHelper myDevOpenHelper=new MyDevOpenHelper(mContext,"ToDoListDataBase");
@@ -45,9 +42,9 @@ public class UserList {
     }
 
 
-    public static UserList getInstance(Context c) {
+    public static UserRepository getInstance(Context c) {
         if (instance == null)
-            instance = new UserList(c);
+            instance = new UserRepository(c);
 
         return instance;
     }
@@ -178,6 +175,18 @@ public class UserList {
         if (userList.size() == 1)
             return userList.get(0).getUserId();
         else return null;
+
+    }
+
+    public boolean nameIsUniq(String newUserName) {
+        boolean nameIsUniq=true;
+        List<User> userList = userDao.queryBuilder()
+                .where(UserDao.Properties.UserName.eq(newUserName))
+                .list();
+
+        if(userList.size()!=0) nameIsUniq=false;
+
+        return nameIsUniq;
 
     }
 

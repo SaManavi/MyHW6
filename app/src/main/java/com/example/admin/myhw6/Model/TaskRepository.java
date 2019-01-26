@@ -1,27 +1,22 @@
 package com.example.admin.myhw6.Model;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.admin.myhw6.ORM.App;
-import com.example.admin.myhw6.ORM.MyDevOpenHelper;
-import com.example.admin.myhw6.database.ToDoListBaseHelper;
-import com.example.admin.myhw6.database.ToDoListSchema;
 
-import org.greenrobot.greendao.database.Database;
-import org.greenrobot.greendao.query.DeleteQuery;
+import org.greenrobot.greendao.query.QueryBuilder;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
-public class TaskList {
+public class TaskRepository {
 
-    private static TaskList instance;
+    private static TaskRepository instance;
     private List<Task> mTaskLists;
+    private List<Task> mSearchResultList;
+
     private Task mTask;
     private SQLiteDatabase mDatabase;
     private Context mContext;
@@ -30,12 +25,9 @@ public class TaskList {
     private TaskDao taskDao=daoSession.getTaskDao();
 
 
-    private TaskList(Context c) {
-        mContext=c.getApplicationContext();
+    private TaskRepository(Context c) {
 
-        MyDevOpenHelper myDevOpenHelper=new MyDevOpenHelper(mContext,"ToDoListDataBase");
-        Database mDatabase  =myDevOpenHelper.getWritableDb();
-
+mContext=c;
 
 
 //        mDatabase=new ToDoListBaseHelper(mContext).getWritableDatabase();
@@ -44,16 +36,16 @@ public class TaskList {
     }
 //
 //
-    public static TaskList getInstance(Context c) {
+    public static TaskRepository getInstance(Context c) {
         if (instance == null)
-            instance = new TaskList(c);
+            instance = new TaskRepository(c);
 
 
 
 
 
 
-//            instance = new TaskList(c);
+//            instance = new TaskRepository(c);
 
         return instance;
     }
@@ -65,7 +57,7 @@ public class TaskList {
 
 
         mTaskLists = taskDao.queryBuilder()
-                .where(TaskDao.Properties.UserId.eq(userId))
+                .where(TaskDao.Properties.MUserId.eq(userId))
                 .list();
         return mTaskLists;
 
@@ -276,12 +268,10 @@ public class TaskList {
     }
 
     public void delTasks(Long userId) {
-        final DeleteQuery<Task> taskDeleteQuery = daoSession.queryBuilder(Task.class)
-                .where(TaskDao.Properties.UserId.eq(userId))
-                .buildDelete();
-        taskDeleteQuery.executeDeleteWithoutDetachingEntities();
-        daoSession.clear();
-
+        List<Task> list = taskDao.queryBuilder()
+                .where(TaskDao.Properties.MUserId.eq(userId))
+                .list();
+        taskDao.deleteInTx(list);
 
 
     }
@@ -358,6 +348,24 @@ public class TaskList {
 ////        return null;
 //    }
 
+    public File getPhotoFile(Task t) {
+        File filesDir = mContext.getFilesDir();
+        File photoFile = new File(filesDir, t.getPhotoName());
+
+        return photoFile;
+    }
 
 
+    public List<Task> getSearchResultList(Long userId,String searchString) {
+
+
+        QueryBuilder<Task> qb = taskDao.queryBuilder();
+              qb.where(TaskDao.Properties.MUserId.eq(userId),
+                qb.or(TaskDao.Properties.MTitle.like("%" + searchString + "%"),
+                TaskDao.Properties.MDescription.like("%" + searchString + "%")));
+
+        mSearchResultList = qb.list();
+
+        return mSearchResultList;
+    }
 }

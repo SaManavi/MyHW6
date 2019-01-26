@@ -4,6 +4,7 @@ package com.example.admin.myhw6;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.TabLayout;
@@ -12,18 +13,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.admin.myhw6.Model.TaskList;
-
-import java.util.UUID;
+import com.example.admin.myhw6.Model.TaskRepository;
 
 
 public class MainActivity extends AppCompatActivity {
     private static final String EXTRA_USER_ID = "com.example.admin.myhw6.user_id";
 
 
-    private TabAdapter adapter;
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
+    private TabAdapter mTabAdapter;
+    private TabLayout mTabLayout;
+    private ViewPager mViewPager;
     private  Long user_Id;
 
 
@@ -33,24 +32,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        viewPager = (ViewPager) findViewById(R.id.viewPager);
-        tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+        mViewPager = (ViewPager) findViewById(R.id.viewPager);
+        mTabLayout = (TabLayout) findViewById(R.id.tabLayout);
 
-        adapter = new TabAdapter(getSupportFragmentManager());
+        mTabAdapter = new TabAdapter(getSupportFragmentManager());
 
 
         user_Id = (Long) getIntent().getSerializableExtra(EXTRA_USER_ID);
 
+        mTabAdapter.addFragment(new AllTasksFragment().newInstance(user_Id), "All Tasks");
+        mTabAdapter.addFragment(new DoneTasksFragment().newInstance(user_Id), "Done");
+        mTabAdapter.addFragment(new UndoneTasksFragment().newInstance(user_Id), "Undone");
 
-
-//        User currentUser = UserList.getInstance(this).getUserById(user_Id);
-
-        adapter.addFragment(new AllTasksFragment().newInstance(user_Id), "All Tasks");
-        adapter.addFragment(new DoneTasksFragment().newInstance(user_Id), "Done");
-        adapter.addFragment(new UndoneTasksFragment().newInstance(user_Id), "Undone");
-
-        viewPager.setAdapter(adapter);
-        tabLayout.setupWithViewPager(viewPager);
+        mViewPager.setAdapter(mTabAdapter);
+        mTabLayout.setupWithViewPager(mViewPager);
 
 
     }
@@ -62,6 +57,41 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater myInflater=getMenuInflater();
+        myInflater.inflate(R.menu.task_detail,menu);
+
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+            case R.id.app_bar_searchitem:
+
+
+                FragmentManager myFm = getSupportFragmentManager();
+
+                DialogOfSearchFragment myDiFragment = DialogOfSearchFragment.newInstance(user_Id);
+
+                myDiFragment.show(myFm, "dialog");
+
+
+
+                break;
+            default:
+              return   super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
+
+
+
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
 
@@ -71,9 +101,9 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         if(user_Id==Long.MAX_VALUE){
-            TaskList.getInstance(this).delTasks(user_Id);
+            TaskRepository.getInstance(this).delTasks(user_Id);
 
-        Toast.makeText(this, "Your tasks deleted ... ", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Your tasks deleted ... ", Toast.LENGTH_SHORT).show();
         }
         finish();
     }

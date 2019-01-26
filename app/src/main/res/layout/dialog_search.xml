@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <EditText
+            android:id="@+id/dialog_search_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="Enter Your Text To Search"
+            android:inputType="textPersonName"
+            android:padding="8dp" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/dialog_search_btn"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="SEARCH" />
+
+</LinearLayout>

@@ -18,7 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.admin.myhw6.Model.Task;
-import com.example.admin.myhw6.Model.TaskList;
+import com.example.admin.myhw6.Model.TaskRepository;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -72,7 +72,7 @@ public class TaskDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         Long mCurrentTaskId = (Long) getArguments().getSerializable(TASK_ID);
-        mCurrentTask=TaskList.getInstance(getActivity()).getTaskById(mCurrentTaskId);
+        mCurrentTask= TaskRepository.getInstance(getActivity()).getTaskById(mCurrentTaskId);
 
     }
 
@@ -143,7 +143,7 @@ public class TaskDetailFragment extends Fragment {
         mDel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               TaskList.getInstance(getActivity()).removeTask(mCurrentTask);//???
+               TaskRepository.getInstance(getActivity()).removeTask(mCurrentTask);//???
                 Toast.makeText(getActivity(), "Your Task has been deleted.", Toast.LENGTH_SHORT).show();
 
                 Intent myIntent=MainActivity.newIntent(getActivity(),mCurrentTask.getUserId());
@@ -285,7 +285,7 @@ public class TaskDetailFragment extends Fragment {
     public void onPause() {
         super.onPause();
 
-        TaskList.getInstance(getActivity()).update(mCurrentTask);
+        TaskRepository.getInstance(getActivity()).update(mCurrentTask);
 
     }
 }

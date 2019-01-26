@@ -3,8 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/app_bar_searchitem"
+        android:icon="@drawable/ic_search_black_24dp"
+        android:title="Item"
+        app:showAsAction="ifRoom|withText|collapseActionView" />
+    <item
         android:id="@+id/del_task"
         android:icon="@android:drawable/ic_menu_delete"
         android:title="DeletTasks"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/app_bar_search"
+        android:icon="@drawable/ic_search_black_24dp"
+        android:title="Search"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="ifRoom|withText|collapseActionView" />
 </menu>

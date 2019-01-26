@@ -5,10 +5,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import com.example.admin.myhw6.Model.Task;
-import com.example.admin.myhw6.Model.TaskList;
+import com.example.admin.myhw6.Model.TaskRepository;
 
 import java.util.List;
-import java.util.UUID;
 
 import static com.example.admin.myhw6.AllTasksFragment.ARG_USER_ID;
 
@@ -41,7 +40,7 @@ public class DoneTasksFragment extends AbstractFragment {
         super.onCreate(savedInstanceState);
 
         Long userId = (Long) getArguments().getSerializable(ARG_USER_ID);
-//        mCurrentUser = UserList.getInstance(getActivity()).getUserById(userId);
+//        mCurrentUser = UserRepository.getInstance(getActivity()).getUserById(userId);
         mCurUsId=userId;
 
 
@@ -50,7 +49,7 @@ public class DoneTasksFragment extends AbstractFragment {
 
     @Override
     public Long getCurentUserId() {
-        return mCurrentUser.getUserId();
+        return mCurUsId;
     }
 
 
@@ -58,7 +57,7 @@ public class DoneTasksFragment extends AbstractFragment {
 
     @Override
     public int AttachingAdapter() {
-        TaskList instance = TaskList.getInstance(getActivity());
+        TaskRepository instance = TaskRepository.getInstance(getActivity());
         List<Task> tl = instance.getDoneTasksList(mCurUsId);
         MyAdapter mAdapt = new MyAdapter(tl);
         mRecyclerView.setAdapter(mAdapt);

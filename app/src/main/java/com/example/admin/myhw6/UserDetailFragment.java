@@ -11,12 +11,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.admin.myhw6.Model.Task;
-import com.example.admin.myhw6.Model.TaskList;
 import com.example.admin.myhw6.Model.User;
-import com.example.admin.myhw6.Model.UserList;
-
-import java.util.Date;
+import com.example.admin.myhw6.Model.UserRepository;
 
 
 /**
@@ -50,19 +46,25 @@ private User mNewUser;
             @Override
             public void onClick(View v) {
                 mNewUser = new User();
-                mNewUser.setUserName(mUserName.getText().toString());
-                mNewUser.setPassword(mUserPassword.getText().toString());
-                mNewUser.setEmail(mEmail.getText().toString());
+                if (!UserRepository.getInstance(getActivity()).nameIsUniq(mUserName.getText().toString()))
+                    Toast.makeText(getActivity(), "Please use another Username!", Toast.LENGTH_SHORT).show();
 
-                UserList.getInstance(getActivity()).addUser(mNewUser);
+                else {
+                    mNewUser.setUserName(mUserName.getText().toString());
 
-                Toast.makeText(getActivity(), "Your User Account has been created.", Toast.LENGTH_SHORT).show();
+                    mNewUser.setPassword(mUserPassword.getText().toString());
+                    mNewUser.setEmail(mEmail.getText().toString());
+
+                    UserRepository.getInstance(getActivity()).addUser(mNewUser);
+
+                    Toast.makeText(getActivity(), "Your User Account has been created.", Toast.LENGTH_SHORT).show();
 //                Toast.makeText(getActivity(), "..."+mNewUser.getUserName()+"/"+mNewUser.getPassword(), Toast.LENGTH_SHORT).show();
 
 
-                Intent myIntent=MainActivity.newIntent(getActivity(),mNewUser.getUserId());
-                startActivity(myIntent);
-                getActivity().finish();
+                    Intent myIntent = MainActivity.newIntent(getActivity(), mNewUser.getUserId());
+                    startActivity(myIntent);
+                    getActivity().finish();
+                }
             }
         });
 

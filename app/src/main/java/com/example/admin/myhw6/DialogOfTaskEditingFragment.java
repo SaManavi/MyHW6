@@ -3,11 +3,17 @@ package com.example.admin.myhw6;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -16,15 +22,19 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.admin.myhw6.Model.Task;
-import com.example.admin.myhw6.Model.TaskList;
+import com.example.admin.myhw6.Model.TaskRepository;
+import com.example.admin.myhw6.Utils.PictureUtils;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.UUID;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,38 +42,39 @@ import java.util.UUID;
 public class DialogOfTaskEditingFragment extends DialogFragment {
 
 
-
     public static final String TASK_ID = "com.example.admin.myhw6.Task uuid as Id";
     private static final String DIALOG_TAG = "DialogDate";
     private static final int REQ_DATE_PICKER = 0;
-    private static final int REQ_TIME_PICKER =1 ;
+    private static final int REQ_TIME_PICKER = 1;
 
 
-
-
+    private ImageView mPhoto;
+    private ImageButton mCapture;
+    private File mPhotoFile;
     private Task mCurrentTask;
     private TextView mTaskTitle;
     private TextView mTaskDes;
     private Button mEdit;
     private Button mDel;
-    private Button mDone;
+    private Button mShare;
     private CheckBox mIsDoneCheckBox;
     private Button mTaskDate;
     private Button mTaskTime;
     private Button mConfirm;
-
-    public static DialogOfTaskEditingFragment newInstance(Long TaskId) {
-
-        DialogOfTaskEditingFragment myFrag=new DialogOfTaskEditingFragment();
-        Bundle args=new Bundle();
-        args.putSerializable(TASK_ID,TaskId);
-        myFrag.setArguments(args);
-        return myFrag;
-
-    }
+    private int REQ_PHOTOS = 2;
 
     public DialogOfTaskEditingFragment() {
         // Required empty public constructor
+    }
+
+    public static DialogOfTaskEditingFragment newInstance(Long TaskId) {
+
+        DialogOfTaskEditingFragment myFrag = new DialogOfTaskEditingFragment();
+        Bundle args = new Bundle();
+        args.putSerializable(TASK_ID, TaskId);
+        myFrag.setArguments(args);
+        return myFrag;
+
     }
 
     @Override
@@ -71,7 +82,8 @@ public class DialogOfTaskEditingFragment extends DialogFragment {
         super.onCreate(savedInstanceState);
 
         Long mCurrentTaskId = (Long) getArguments().getSerializable(TASK_ID);
-        mCurrentTask=TaskList.getInstance(getActivity()).getTaskById(mCurrentTaskId);
+        mCurrentTask = TaskRepository.getInstance(getActivity()).getTaskById(mCurrentTaskId);
+        mPhotoFile = TaskRepository.getInstance(getActivity()).getPhotoFile(mCurrentTask);
         //        View v=LayoutInflater.from(getActivity()).inflate(R.layout.fragment_task_detail,null);
 
 
@@ -80,42 +92,42 @@ public class DialogOfTaskEditingFragment extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_task_detail, container);
+        View view = inflater.inflate(R.layout.fragment_task_detail, container);
 
+        return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View v, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(v, savedInstanceState);
 
-
-        mTaskTitle=v.findViewById(R.id.task_detail_title);
-        mTaskDes=v.findViewById(R.id.task_detail_des);
-        mDone=v.findViewById(R.id.task_detail_done_butt);
-        mIsDoneCheckBox =v.findViewById(R.id.task_detail_isDone);
-        mTaskDate=v.findViewById(R.id.date_of_task_button);
-        mTaskTime=v.findViewById(R.id.time_of_task_button);
-        mDel=v.findViewById(R.id.task_detail_del_butt);
-        mEdit=v.findViewById(R.id.task_detail_edit_butt);
-        mConfirm=v.findViewById(R.id.task_detail_confirm);
-
+        mCapture = v.findViewById(R.id.task_detail_capture_button);
+        mPhoto = v.findViewById(R.id.task_detail_edit_photo);
+        mTaskTitle = v.findViewById(R.id.task_detail_title);
+        mTaskDes = v.findViewById(R.id.task_detail_des);
+        mShare = v.findViewById(R.id.task_detail_share_butt);
+        mIsDoneCheckBox = v.findViewById(R.id.task_detail_isDone);
+        mTaskDate = v.findViewById(R.id.date_of_task_button);
+        mTaskTime = v.findViewById(R.id.time_of_task_button);
+        mDel = v.findViewById(R.id.task_detail_del_butt);
+        mEdit = v.findViewById(R.id.task_detail_edit_butt);
+        mConfirm = v.findViewById(R.id.task_detail_confirm);
+        updatePhotoView();
 
 
         mConfirm.setVisibility(View.INVISIBLE);
-        if(mCurrentTask.getMIsdone()==true)mDone.setEnabled(false);
         mIsDoneCheckBox.setChecked(mCurrentTask.getMIsdone());
         mTaskTitle.setText(mCurrentTask.getTitle());
         mTaskDes.setText(mCurrentTask.getMDescription());
-
 
 
         SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy/MM/dd ");
         SimpleDateFormat mTimeFormat = new SimpleDateFormat(" hh:mm a ");
         Date GetDate = mCurrentTask.getMDate();
         String DateStr = mDateFormat.format(GetDate);
-        String TimeStr=mTimeFormat.format(GetDate);
-        mTaskDate.setText("Date Of Task:   "+DateStr);
-        mTaskTime.setText("Time Of Task:   "+TimeStr);
+        String TimeStr = mTimeFormat.format(GetDate);
+        mTaskDate.setText("Date Of Task:   " + DateStr);
+        mTaskTime.setText("Time Of Task:   " + TimeStr);
 
 
         mTaskTitle.setEnabled(false);
@@ -124,19 +136,44 @@ public class DialogOfTaskEditingFragment extends DialogFragment {
         mTaskDate.setEnabled(false);
         mTaskTime.setEnabled(false);
 
-
-
-
-
-        mDone.setOnClickListener(new View.OnClickListener() {
+        mPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCurrentTask.setMIsdone(true);
-                mDone.setEnabled(false);
+                Toast.makeText(getActivity(), "mphoto exist", Toast.LENGTH_SHORT).show();
+            }
+        });
+        mCapture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-                Intent myIntent=MainActivity.newIntent(getActivity(),mCurrentTask.getUserId());
-                startActivity(myIntent);
-                getActivity().finish();
+                Uri uri = getPhotoFileUri();
+                captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+
+                PackageManager packageManager = getActivity().getPackageManager();
+                List<ResolveInfo> activities = packageManager.queryIntentActivities(captureIntent, PackageManager.MATCH_DEFAULT_ONLY);
+
+                for (ResolveInfo activity : activities) {
+                    getActivity().grantUriPermission(activity.activityInfo.packageName, uri,
+                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                }
+                startActivityForResult(captureIntent, REQ_PHOTOS);
+
+            }
+        });
+
+
+        mShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                Intent reportIntent = new Intent(Intent.ACTION_SEND);
+                reportIntent.setType("text/plain");
+                reportIntent.putExtra(Intent.EXTRA_TEXT, getTaskReport());
+                startActivity(Intent.createChooser(reportIntent, getTaskReport()));
+
+
             }
         });
 
@@ -151,17 +188,16 @@ public class DialogOfTaskEditingFragment extends DialogFragment {
                 mConfirm.setVisibility(View.VISIBLE);
 
 
-
             }
         });
 
         mDel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TaskList.getInstance(getActivity()).removeTask(mCurrentTask);//???
+                TaskRepository.getInstance(getActivity()).removeTask(mCurrentTask);//???
                 Toast.makeText(getActivity(), "Your Task has been deleted.", Toast.LENGTH_SHORT).show();
 
-                Intent myIntent=MainActivity.newIntent(getActivity(),mCurrentTask.getUserId());
+                Intent myIntent = MainActivity.newIntent(getActivity(), mCurrentTask.getUserId());
                 startActivity(myIntent);
 //              getActivity().finish();
             }
@@ -176,14 +212,13 @@ public class DialogOfTaskEditingFragment extends DialogFragment {
                 mTaskDate.setEnabled(false);
                 mTaskTime.setEnabled(false);
                 mConfirm.setEnabled(false);
-                Toast.makeText(getActivity(), "edited..."+mCurrentTask.getTitle(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "edited..." + mCurrentTask.getTitle(), Toast.LENGTH_SHORT).show();
                 Toast.makeText(getActivity(), "Your task has been edited.", Toast.LENGTH_SHORT).show();
 
 
-
-                Intent myIntent=MainActivity.newIntent(getActivity(),mCurrentTask.getUserId());
+                Intent myIntent = MainActivity.newIntent(getActivity(), mCurrentTask.getUserId());
                 startActivity(myIntent);
-              getActivity().finish();
+                getActivity().finish();
 
             }
         });
@@ -229,7 +264,7 @@ public class DialogOfTaskEditingFragment extends DialogFragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 mCurrentTask.setMIsdone(isChecked);
-                mDone.setEnabled(!isChecked);
+                mShare.setEnabled(!isChecked);
             }
         });
 
@@ -256,11 +291,21 @@ public class DialogOfTaskEditingFragment extends DialogFragment {
         });
 
 
-
     }
 
+    public String getTaskReport() {
 
 
+        String report = "Your Task: " + mCurrentTask.getTitle() + " \n Description: " + mCurrentTask.getMDescription()
+                + " \nis set for "
+                + mCurrentTask.getMDate() +
+                " to do. \nYour task is";
+
+
+        return report;
+
+
+    }
 
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -283,7 +328,6 @@ public class DialogOfTaskEditingFragment extends DialogFragment {
         }
 
 
-
         if (requestCode == REQ_TIME_PICKER) {
             Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
             mCurrentTask.setMDate(date);
@@ -292,10 +336,19 @@ public class DialogOfTaskEditingFragment extends DialogFragment {
             SimpleDateFormat mTimeFormat = new SimpleDateFormat(" hh:mm a ");
             Date GetDate = mCurrentTask.getMDate();
 
-            String TimeStr=mTimeFormat.format(GetDate);
+            String TimeStr = mTimeFormat.format(GetDate);
 
             mTaskTime.setText(TimeStr);
         }
+
+        if (requestCode == REQ_PHOTOS) {
+
+            Uri uri = getPhotoFileUri();
+            getActivity().revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            updatePhotoView();
+
+        }
+
     }
 
 
@@ -303,8 +356,30 @@ public class DialogOfTaskEditingFragment extends DialogFragment {
     public void onPause() {
         super.onPause();
 
-        TaskList.getInstance(getActivity()).update(mCurrentTask);
+        TaskRepository.getInstance(getActivity()).update(mCurrentTask);
 
     }
+
+
+    private Uri getPhotoFileUri() {
+        return FileProvider.getUriForFile(getActivity(),
+                "com.example.admin.myhw6.fileprovider", mPhotoFile);
+    }
+
+
+    private void updatePhotoView() {
+        if (mPhotoFile == null || !mPhotoFile.exists()) {
+//            mPhoto.setImageDrawable(null);
+            return;
+        } else {
+
+            Bitmap bitmap = PictureUtils.getScaledBitmap(
+                    mPhotoFile.getPath(),
+                    getActivity());
+            mPhoto.setImageBitmap(bitmap);
+
+        }
+    }
+
 
 }

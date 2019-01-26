@@ -2,11 +2,10 @@ package com.example.admin.myhw6.Model;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
-import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.ToOne;
 
 import java.util.Date;
-import java.util.UUID;
+
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
 
@@ -24,11 +23,10 @@ public class Task {
     private boolean mIsdone;
 
     @Id(autoincrement = true)
-    private Long taskId;
+    private Long mTaskId;
 
-    private Long userId;
-
-    @ToOne(joinProperty = "userId")
+    private Long mUserId;
+    @ToOne(joinProperty = "mUserId")
     private User users;
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
@@ -43,25 +41,25 @@ public class Task {
 //
 //@Keep
 //    public Task(String mTitle, String mDescription, Date mDate, boolean mIsdone,
-//                Long userId) {
+//                Long mUserId) {
 //        this.mTitle = mTitle;
 //        this.mDescription = mDescription;
 //        this.mDate = mDate;
 //        this.mIsdone = mIsdone;
-//        this.taskId = taskId;
-//        this.userId = userId;
+//        this.mTaskId = mTaskId;
+//        this.mUserId = mUserId;
 //    }
 
 
-    @Generated(hash = 101736849)
-    public Task(String mTitle, String mDescription, Date mDate, boolean mIsdone, Long taskId,
-            Long userId) {
+    @Generated(hash = 1641614117)
+    public Task(String mTitle, String mDescription, Date mDate, boolean mIsdone, Long mTaskId,
+            Long mUserId) {
         this.mTitle = mTitle;
         this.mDescription = mDescription;
         this.mDate = mDate;
         this.mIsdone = mIsdone;
-        this.taskId = taskId;
-        this.userId = userId;
+        this.mTaskId = mTaskId;
+        this.mUserId = mUserId;
     }
 
     @Generated(hash = 733837707)
@@ -101,25 +99,25 @@ public class Task {
     }
 
     public Long getTaskId() {
-        return this.taskId;
+        return this.mTaskId;
     }
 
     public void setTaskId(Long taskId) {
-        this.taskId = taskId;
+        this.mTaskId = taskId;
     }
 
     public Long getUserId() {
-        return this.userId;
+        return this.mUserId;
     }
 
     public void setUserId(Long userId) {
-        this.userId = userId;
+        this.mUserId = userId;
     }
 
     /** To-one relationship, resolved on first access. */
-    @Generated(hash = 1608763732)
+    @Generated(hash = 1358069503)
     public User getUsers() {
-        Long __key = this.userId;
+        Long __key = this.mUserId;
         if (users__resolvedKey == null || !users__resolvedKey.equals(__key)) {
             final DaoSession daoSession = this.daoSession;
             if (daoSession == null) {
@@ -136,12 +134,12 @@ public class Task {
     }
 
     /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1178717799)
+    @Generated(hash = 151719297)
     public void setUsers(User users) {
         synchronized (this) {
             this.users = users;
-            userId = users == null ? null : users.getUserId();
-            users__resolvedKey = userId;
+            mUserId = users == null ? null : users.getUserId();
+            users__resolvedKey = mUserId;
         }
     }
 
@@ -185,15 +183,33 @@ public class Task {
         return this.mTitle;
     }
 
+    public String getPhotoName() {
+        return "IMG_" + mTaskId.toString() + ".jpg";
+    }
+
+    public Long getMTaskId() {
+        return this.mTaskId;
+    }
+
+    public void setMTaskId(Long mTaskId) {
+        this.mTaskId = mTaskId;
+    }
+
+    public Long getMUserId() {
+        return this.mUserId;
+    }
+
+    public void setMUserId(Long mUserId) {
+        this.mUserId = mUserId;
+    }
+
     /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 1442741304)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getTaskDao() : null;
     }
-
-
-
+}
 
 
 
@@ -220,13 +236,13 @@ public class Task {
 //    }
 //
 //
-//    public Task( String title, String description,boolean isdone, Date date, UUID userId) {
+//    public Task( String title, String description,boolean isdone, Date date, UUID mUserId) {
 //        this();
 //        mTitle = title;
 //        mDescription = description;
 //        mIsdone=isdone;
 //        mDate = date;
-//        mUserId=userId;
+//        mUserId=mUserId;
 //    }
 //
 //    public UUID getTaskUUID() {
@@ -273,7 +289,7 @@ public class Task {
 //        return mUserId;
 //    }
 //
-//    public void setUserId(UUID userId) {
-//        mUserId = userId;
+//    public void setUserId(UUID mUserId) {
+//        mUserId = mUserId;
 //    }
-}
+
